@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../../config.php';
 require_login();
-require_once __DIR__ . '/../../libs/phpqrcode/qrlib.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['table_number'])) {
     $tableNumber = trim($_POST['table_number']);
@@ -27,11 +26,6 @@ if (isset($_GET['delete'])) {
 
 $result = $mysqli->query('SELECT * FROM tables ORDER BY table_number');
 $tables = $result ? result_fetch_all_assoc($result) : [];
-
-$qrDir = __DIR__ . '/../../uploads/qr/';
-if (!is_dir($qrDir)) {
-    mkdir($qrDir, 0755, true);
-}
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -72,20 +66,15 @@ include __DIR__ . '/../includes/header.php';
                         </thead>
                         <tbody>
                         <?php foreach ($tables as $table): ?>
-                            <?php
-                                $qrFileName = 'table_' . preg_replace('/[^A-Za-z0-9]/', '_', $table['table_number']) . '.png';
-                                $qrPath = $qrDir . $qrFileName;
-                                $orderUrl = absolute_url('order.php?table=' . urlencode($table['table_number']));
-                                if (!file_exists($qrPath)) {
-                                    QRcode::png($orderUrl, $qrPath, QR_ECLEVEL_L, 6);
-                                }
-                                $qrWebPath = public_url('uploads/qr/' . $qrFileName);
-                            ?>
                             <tr>
                                 <td>Meja <?php echo esc_html($table['table_number']); ?></td>
                                 <td>
-                                    <a href="<?php echo esc_html($qrWebPath); ?>" target="_blank">
-                                        <img src="<?php echo esc_html($qrWebPath); ?>" alt="QR Meja <?php echo esc_html($table['table_number']); ?>" style="width:120px;">
+                                    <?php
+                                        $qrImage = url_for('qr.php?table=' . rawurlencode($table['table_number']));
+                                        $orderUrl = absolute_url('order.php?table=' . urlencode($table['table_number']));
+                                    ?>
+                                    <a href="<?php echo esc_html($qrImage); ?>" target="_blank">
+                                        <img src="<?php echo esc_html($qrImage); ?>" alt="QR Meja <?php echo esc_html($table['table_number']); ?>" style="width:120px;">
                                     </a>
                                     <p class="small mb-0"><a href="<?php echo esc_html($orderUrl); ?>" target="_blank">Preview Menu</a></p>
                                 </td>

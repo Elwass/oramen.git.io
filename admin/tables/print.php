@@ -20,20 +20,8 @@ if (!$table) {
     exit;
 }
 
-require_once __DIR__ . '/../../libs/phpqrcode/qrlib.php';
-$qrDir = __DIR__ . '/../../uploads/qr/';
-if (!is_dir($qrDir)) {
-    mkdir($qrDir, 0755, true);
-}
-
-$baseUrl = rtrim(absolute_url(''), '/');
-$qrFileName = 'table_' . preg_replace('/[^A-Za-z0-9]/', '_', $table['table_number']) . '.png';
-$qrPath = $qrDir . $qrFileName;
 $orderUrl = absolute_url('order.php?table=' . urlencode($table['table_number']));
-if (!file_exists($qrPath)) {
-    QRcode::png($orderUrl, $qrPath, QR_ECLEVEL_L, 6);
-}
-$qrWebPath = public_url('uploads/qr/' . $qrFileName);
+$qrWebPath = url_for('qr.php?table=' . rawurlencode($table['table_number']));
 ?>
 <!DOCTYPE html>
 <html lang="en">

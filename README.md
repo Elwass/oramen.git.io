@@ -80,7 +80,7 @@ project-ramen1/
 
 ## Dummy Assets
 - Folder `uploads/sample/` kosong di repositori (kecuali `.gitkeep`) agar pull request bebas dari file biner. Jalankan `php scripts/generate_sample_images.php` setelah cloning untuk membuat 10 foto placeholder otomatis.
-- Folder `uploads/qr/` juga hanya menyertakan `.gitkeep`. Pakai `php scripts/generate_sample_qr.php` atau menu **Generate QR Semua Meja** di dashboard untuk membuat PNG QR meja 1-10.
+- QR code meja selalu bisa dilihat karena file `qr.php` menggambar PNG secara langsung menggunakan PHP/GD begitu halaman tabel diakses. Folder `uploads/qr/` tetap kosong secara default; jalankan `php scripts/generate_sample_qr.php` atau gunakan tombol **Generate QR Semua Meja** jika ingin menyimpan PNG permanen untuk penggunaan offline.
 - Kedua skrip menyimpan file di dalam `uploads/` dan aman dijalankan berulang kali jika ingin menyegarkan placeholder.
 
 ## Lisensi
