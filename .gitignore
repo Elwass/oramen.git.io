@@ -1,0 +1,12 @@
+# Ignore generated uploads (menu photos & QR PNGs)
+uploads/*
+!uploads/.gitkeep
+!uploads/qr
+uploads/qr/*
+!uploads/qr/.gitkeep
+!uploads/sample
+uploads/sample/*
+!uploads/sample/.gitkeep
+!uploads/menu
+uploads/menu/*
+!uploads/menu/.gitkeep
