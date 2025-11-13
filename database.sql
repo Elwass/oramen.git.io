@@ -61,7 +61,7 @@ CREATE TABLE order_items (
 );
 
 INSERT INTO users (username, password) VALUES
-('admin', '$2y$10$uBXwVnR1ZHphSCe6xPD58OC9frN7kYMva9n32CuWHa3gwxM/H2y1a'); -- password: admin123
+('admin', '$2y$12$t7u3B/LELZPJFKxv3kzrtej1j0fmvdviotvNKqpjQhh7l.HhYdcSa'); -- password: admin123
 
 INSERT INTO tables (table_number) VALUES
 ('1'),('2'),('3'),('4'),('5'),('6'),('7'),('8'),('9'),('10');
