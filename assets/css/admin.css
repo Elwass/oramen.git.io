@@ -1,0 +1,35 @@
+body {
+    background-color: #f3f4f6;
+}
+
+.badge.bg-status-baru {
+    background-color: #ef4444;
+}
+
+.badge.bg-status-sedang-dibuat {
+    background-color: #f59e0b;
+}
+
+.badge.bg-status-selesai {
+    background-color: #10b981;
+}
+
+.badge.bg-status-dibayar {
+    background-color: #3b82f6;
+}
+
+.order-row.status-baru {
+    border-left: 4px solid #ef4444;
+}
+
+.order-row.status-sedang-dibuat {
+    border-left: 4px solid #f59e0b;
+}
+
+.order-row.status-selesai {
+    border-left: 4px solid #10b981;
+}
+
+.order-row.status-dibayar {
+    border-left: 4px solid #3b82f6;
+}
