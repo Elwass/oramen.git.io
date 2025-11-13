@@ -1,107 +1,83 @@
 <?php
-require_once __DIR__ . '/../../config.php';
-require_once __DIR__ . '/../../libs/phpqrcode/qrlib.php';
+require_once __DIR__ . '/../config.php';
+require_login();
 
-// Pastikan folder QR ada
-$qrDir = __DIR__ . '/../../uploads/qr/';
-if (!is_dir($qrDir)) {
-    mkdir($qrDir, 0777, true);
+$statusFilter = $_GET['status'] ?? '';
+$allowedStatuses = ['', 'Baru', 'Sedang Dibuat', 'Selesai', 'Dibayar'];
+if (!in_array($statusFilter, $allowedStatuses, true)) {
+    $statusFilter = '';
 }
 
-// Handle form tambah meja
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $table_name = trim($_POST['name'] ?? '');
+$sql = "SELECT o.id, o.status, o.created_at, t.table_number, COALESCE(SUM(oi.quantity * oi.price), 0) AS total
+        FROM orders o
+        JOIN tables t ON t.id = o.table_id
+        LEFT JOIN order_items oi ON oi.order_id = o.id";
 
-    if (!empty($table_name)) {
-        $stmt = $mysqli->prepare("INSERT INTO tables (name) VALUES (?)");
-        $stmt->bind_param("s", $table_name);
-        $stmt->execute();
+$params = [];
+$types = '';
 
-        $newId = $stmt->insert_id;
-
-        // =====================================================
-        //  GENERATE QR UNTUK MEJA BARU
-        // =====================================================
-
-        $orderUrl = "http://localhost/oramen.git.io/order.php?table={$newId}";
-
-        // QR ENGINE versi CODEX
-        $qr = new QRCode([
-            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'eccLevel'   => QRCode::ECC_L,
-            'scale'      => 6,
-        ]);
-
-        // Bersihkan output buffer agar PNG tidak corrupt
-        if (ob_get_length()) {
-            ob_clean();
-        }
-
-        $pngData = $qr->render($orderUrl); // hasil PNG BINARY VALID
-
-        $filePath = $qrDir . "table_{$newId}.png";
-        file_put_contents($filePath, $pngData);
-
-        header("Location: /oramen.git.io/admin/tables/");
-        exit;
-    }
+if ($statusFilter) {
+    $sql .= ' WHERE o.status = ?';
+    $types .= 's';
+    $params[] = $statusFilter;
+} else {
+    $sql .= " WHERE o.status <> 'Dibatalkan'";
 }
 
-// Ambil daftar meja
-$tables = $mysqli->query("SELECT * FROM tables ORDER BY id ASC");
+$sql .= ' GROUP BY o.id, o.status, o.created_at, t.table_number ORDER BY o.created_at DESC';
+
+$stmt = $mysqli->prepare($sql);
+if ($types) {
+    $stmt->bind_param($types, ...$params);
+}
+$orders = [];
+if ($stmt->execute()) {
+    $orders = stmt_fetch_all_assoc($stmt);
+}
+
+include __DIR__ . '/includes/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Daftar Meja - Admin</title>
-    <link rel="stylesheet" href="/oramen.git.io/assets/css/admin.css">
-</head>
-<body>
-
-<div class="wrapper">
-
-    <h2>Daftar Meja</h2>
-
-    <div class="table-list">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nomor Meja</th>
-                    <th>QR Code</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                <?php while ($row = $tables->fetch_assoc()): ?>
-                    <tr>
-                        <td>Meja <?php echo $row['id']; ?></td>
-
-                        <td>
-                            <img src="/oramen.git.io/uploads/qr/table_<?php echo $row['id']; ?>.png"
-                                 alt="QR Meja <?php echo $row['id']; ?>"
-                                 width="120">
-
-                            <br>
-                            <a href="/oramen.git.io/admin/tables/print.php?id=<?php echo $row['id']; ?>">
-                                Preview Menu
-                            </a>
-                        </td>
-
-                        <td>
-                            <a href="/oramen.git.io/admin/tables/print.php?id=<?php echo $row['id']; ?>" class="btn">Print</a>
-                            <a href="/oramen.git.io/admin/tables/delete.php?id=<?php echo $row['id']; ?>" class="btn-danger">Hapus</a>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-
-            </tbody>
-        </table>
-    </div>
-
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Dashboard Pesanan</h1>
+    <form class="d-flex" method="get">
+        <select name="status" class="form-select" onchange="this.form.submit()">
+            <option value="">Semua Status</option>
+            <?php foreach (['Baru','Sedang Dibuat','Selesai','Dibayar'] as $status): ?>
+                <option value="<?php echo esc_html($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo esc_html($status); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </form>
 </div>
-
-</body>
-</html>
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Meja</th>
+                <th>Status</th>
+                <th>Waktu</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (!$orders): ?>
+            <tr><td colspan="6" class="text-center">Belum ada pesanan.</td></tr>
+        <?php else: ?>
+            <?php foreach ($orders as $order): ?>
+                <tr class="order-row status-<?php echo strtolower(str_replace(' ', '-', $order['status'])); ?>">
+                    <td>#<?php echo esc_html($order['id']); ?></td>
+                    <td>Meja <?php echo esc_html($order['table_number']); ?></td>
+                    <td><span class="badge bg-status-<?php echo strtolower(str_replace(' ', '-', $order['status'])); ?>"><?php echo esc_html($order['status']); ?></span></td>
+                    <td><?php echo esc_html(date('d/m/Y H:i', strtotime($order['created_at']))); ?></td>
+                    <td>Rp <?php echo number_format($order['total'], 0, ',', '.'); ?></td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="<?php echo esc_html(url_for('admin/orders/detail.php?id=' . (int) $order['id'])); ?>">Detail</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -15,7 +15,7 @@ Aplikasi web fullstack pemesanan dan pembayaran restoran ala Ramen 1. Dibangun m
 - MySQL 5.7+ / MariaDB 10+
 - Ekstensi PHP: `mysqli`, `gd`
 - Web server lokal (XAMPP/Laragon/dll.)
-- Opsional: Python 3 dengan paket `qrcode[pil]` untuk generator QR (jalankan `pip install qrcode[pil]`).
+- GD extension sudah aktif secara default pada XAMPP/Laragon modern untuk proses render gambar menu & QR.
 
 ## Instalasi
 1. **Clone/Salin Proyek**
@@ -36,13 +36,18 @@ Aplikasi web fullstack pemesanan dan pembayaran restoran ala Ramen 1. Dibangun m
 4. **Sesuaikan Koneksi Database**
    - Edit `config.php` bila user/password MySQL berbeda.
 
-5. **Generate QR Code (opsional pertama kali)**
+5. **Generate Asset Dummy (opsional)**
+   - Jalankan `php scripts/generate_sample_images.php` untuk membuat ulang foto placeholder menu.
+   - Jalankan `php scripts/generate_sample_qr.php` untuk menyiapkan QR code meja 1-10 secara otomatis.
+   - Kedua skrip di atas memakai GD bawaan PHP sehingga bisa dieksekusi dari terminal atau `php.exe` pada Windows.
+
+6. **Generate/Regenerasi QR via Dashboard (opsional)**
    - Login ke dashboard (`http://localhost/project-ramen1/admin/login.php`).
    - Username: `admin`, Password: `admin123`.
-   - Buka menu **Meja & QR**, klik **Generate QR Semua Meja**.
+   - Buka menu **Meja & QR**, klik **Generate QR Semua Meja** bila ingin membuat ulang dari antarmuka.
    - Cetak QR untuk ditempel di setiap meja.
 
-6. **Akses Aplikasi**
+7. **Akses Aplikasi**
    - **Menu Digital:** `http://localhost/project-ramen1/order.php?table=1`
    - **Dashboard Kasir:** `http://localhost/project-ramen1/admin/login.php`
 
@@ -71,7 +76,12 @@ project-ramen1/
 - Gunakan HTTPS di lingkungan produksi.
 - Validasi dasar menggunakan prepared statement (`mysqli`).
 - Jangan lupa mengganti password default admin pada tabel `users`.
-- Jika generator QR tidak berjalan, pastikan Python + modul `qrcode` telah terpasang atau ganti dengan solusi lain sesuai kebutuhan.
+- QR code digambar sepenuhnya menggunakan PHP/GD, jadi tidak memerlukan dependensi eksternal tambahan.
+
+## Dummy Assets
+- Folder `uploads/sample/` kosong di repositori (kecuali `.gitkeep`) agar pull request bebas dari file biner. Jalankan `php scripts/generate_sample_images.php` setelah cloning untuk membuat 10 foto placeholder otomatis.
+- Folder `uploads/qr/` juga hanya menyertakan `.gitkeep`. Pakai `php scripts/generate_sample_qr.php` atau menu **Generate QR Semua Meja** di dashboard untuk membuat PNG QR meja 1-10.
+- Kedua skrip menyimpan file di dalam `uploads/` dan aman dijalankan berulang kali jika ingin menyegarkan placeholder.
 
 ## Lisensi
 Proyek ini disediakan untuk kebutuhan edukasi/demonstrasi. Silakan modifikasi sesuai kebutuhan bisnis Anda.
