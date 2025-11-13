@@ -30,8 +30,10 @@ $stmt = $mysqli->prepare($sql);
 if ($types) {
     $stmt->bind_param($types, ...$params);
 }
-$stmt->execute();
-$orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$orders = [];
+if ($stmt->execute()) {
+    $orders = stmt_fetch_all_assoc($stmt);
+}
 
 include __DIR__ . '/includes/header.php';
 ?>

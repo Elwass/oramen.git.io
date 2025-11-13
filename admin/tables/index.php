@@ -26,7 +26,7 @@ if (isset($_GET['delete'])) {
 }
 
 $result = $mysqli->query('SELECT * FROM tables ORDER BY table_number');
-$tables = $result->fetch_all(MYSQLI_ASSOC);
+$tables = $result ? result_fetch_all_assoc($result) : [];
 
 $qrDir = __DIR__ . '/../../uploads/qr/';
 if (!is_dir($qrDir)) {

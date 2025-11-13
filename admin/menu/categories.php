@@ -32,7 +32,7 @@ if (isset($_GET['delete'])) {
 }
 
 $result = $mysqli->query('SELECT * FROM menu_categories ORDER BY name');
-$categories = $result->fetch_all(MYSQLI_ASSOC);
+$categories = $result ? result_fetch_all_assoc($result) : [];
 
 include __DIR__ . '/../includes/header.php';
 ?>

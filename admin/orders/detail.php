@@ -15,8 +15,10 @@ $stmt = $mysqli->prepare("SELECT o.id, o.status, o.created_at, t.table_number, C
                          WHERE o.id = ?
                          GROUP BY o.id, o.status, o.created_at, t.table_number LIMIT 1");
 $stmt->bind_param('i', $orderId);
-$stmt->execute();
-$order = $stmt->get_result()->fetch_assoc();
+$order = null;
+if ($stmt->execute()) {
+    $order = stmt_fetch_assoc($stmt);
+}
 
 if (!$order) {
     header('Location: /admin/index.php');
@@ -25,8 +27,10 @@ if (!$order) {
 
 $stmtItems = $mysqli->prepare('SELECT oi.*, mi.name FROM order_items oi JOIN menu_items mi ON mi.id = oi.menu_item_id WHERE oi.order_id = ?');
 $stmtItems->bind_param('i', $orderId);
-$stmtItems->execute();
-$orderItems = $stmtItems->get_result()->fetch_all(MYSQLI_ASSOC);
+$orderItems = [];
+if ($stmtItems->execute()) {
+    $orderItems = stmt_fetch_all_assoc($stmtItems);
+}
 
 include __DIR__ . '/../includes/header.php';
 ?>

@@ -4,7 +4,7 @@ require_login();
 
 $sql = "SELECT mi.*, mc.name AS category_name FROM menu_items mi JOIN menu_categories mc ON mc.id = mi.category_id ORDER BY mc.name, mi.name";
 $result = $mysqli->query($sql);
-$items = $result->fetch_all(MYSQLI_ASSOC);
+$items = $result ? result_fetch_all_assoc($result) : [];
 
 include __DIR__ . '/../includes/header.php';
 ?>

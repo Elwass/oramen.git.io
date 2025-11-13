@@ -19,8 +19,10 @@ if ($tableNumber === '' || empty($items)) {
 
 $stmtTable = $mysqli->prepare('SELECT id FROM tables WHERE table_number = ? LIMIT 1');
 $stmtTable->bind_param('s', $tableNumber);
-$stmtTable->execute();
-$table = $stmtTable->get_result()->fetch_assoc();
+$table = null;
+if ($stmtTable->execute()) {
+    $table = stmt_fetch_assoc($stmtTable);
+}
 
 if (!$table) {
     $stmtInsertTable = $mysqli->prepare('INSERT INTO tables (table_number, created_at) VALUES (?, NOW())');
@@ -47,8 +49,10 @@ foreach ($items as $item) {
         continue;
     }
     $stmtMenu->bind_param('i', $menuId);
-    $stmtMenu->execute();
-    $menuResult = $stmtMenu->get_result()->fetch_assoc();
+    $menuResult = null;
+    if ($stmtMenu->execute()) {
+        $menuResult = stmt_fetch_assoc($stmtMenu);
+    }
     if (!$menuResult) {
         continue;
     }

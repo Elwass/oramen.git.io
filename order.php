@@ -5,18 +5,20 @@ $tableNumber = trim($_GET['table'] ?? '');
 if ($tableNumber !== '') {
     $stmt = $mysqli->prepare('SELECT id FROM tables WHERE table_number = ? LIMIT 1');
     $stmt->bind_param('s', $tableNumber);
-    $stmt->execute();
-    $table = $stmt->get_result()->fetch_assoc();
+    $table = null;
+    if ($stmt->execute()) {
+        $table = stmt_fetch_assoc($stmt);
+    }
     $tableId = $table['id'] ?? null;
 } else {
     $tableId = null;
 }
 
 $categoriesResult = $mysqli->query('SELECT id, name FROM menu_categories ORDER BY name');
-$categories = $categoriesResult->fetch_all(MYSQLI_ASSOC);
+$categories = $categoriesResult ? result_fetch_all_assoc($categoriesResult) : [];
 
-$stmtItems = $mysqli->query('SELECT mi.*, mc.name AS category_name FROM menu_items mi JOIN menu_categories mc ON mc.id = mi.category_id ORDER BY mc.name, mi.name');
-$items = $stmtItems->fetch_all(MYSQLI_ASSOC);
+$itemsResult = $mysqli->query('SELECT mi.*, mc.name AS category_name FROM menu_items mi JOIN menu_categories mc ON mc.id = mi.category_id ORDER BY mc.name, mi.name');
+$items = $itemsResult ? result_fetch_all_assoc($itemsResult) : [];
 
 $menuByCategory = [];
 foreach ($items as $item) {

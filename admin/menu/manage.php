@@ -6,7 +6,7 @@ $itemId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $item = null;
 
 $stmtCat = $mysqli->query('SELECT id, name FROM menu_categories ORDER BY name');
-$categories = $stmtCat->fetch_all(MYSQLI_ASSOC);
+$categories = $stmtCat ? result_fetch_all_assoc($stmtCat) : [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
@@ -25,8 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($itemId) {
         $stmt = $mysqli->prepare('SELECT image FROM menu_items WHERE id = ?');
         $stmt->bind_param('i', $itemId);
-        $stmt->execute();
-        $existing = $stmt->get_result()->fetch_assoc();
+        $existing = null;
+        if ($stmt->execute()) {
+            $existing = stmt_fetch_assoc($stmt);
+        }
         $imagePath = $existing['image'] ?? null;
     }
 
@@ -60,8 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($itemId) {
     $stmt = $mysqli->prepare('SELECT * FROM menu_items WHERE id = ?');
     $stmt->bind_param('i', $itemId);
-    $stmt->execute();
-    $item = $stmt->get_result()->fetch_assoc();
+    if ($stmt->execute()) {
+        $item = stmt_fetch_assoc($stmt);
+    }
 }
 
 include __DIR__ . '/../includes/header.php';

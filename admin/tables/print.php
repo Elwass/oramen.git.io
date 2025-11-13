@@ -10,8 +10,10 @@ if ($id <= 0) {
 
 $stmt = $mysqli->prepare('SELECT table_number FROM tables WHERE id = ?');
 $stmt->bind_param('i', $id);
-$stmt->execute();
-$table = $stmt->get_result()->fetch_assoc();
+$table = null;
+if ($stmt->execute()) {
+    $table = stmt_fetch_assoc($stmt);
+}
 
 if (!$table) {
     header('Location: /admin/tables/index.php');

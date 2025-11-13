@@ -4,7 +4,7 @@ require_login();
 require_once __DIR__ . '/../../libs/phpqrcode/qrlib.php';
 
 $result = $mysqli->query('SELECT table_number FROM tables ORDER BY table_number');
-$tables = $result->fetch_all(MYSQLI_ASSOC);
+$tables = $result ? result_fetch_all_assoc($result) : [];
 
 $qrDir = __DIR__ . '/../../uploads/qr/';
 if (!is_dir($qrDir)) {
