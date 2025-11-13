@@ -19,8 +19,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $user = stmt_fetch_assoc($stmt);
     }
+    $stmt->close();
 
-    if ($user && password_verify($password, $user['password'])) {
+    $isValid = false;
+    $needsRehash = false;
+
+    if ($user) {
+        $passwordField = $user['password'] ?? '';
+        $hashInfo = password_get_info($passwordField);
+
+        if ($hashInfo['algo'] !== 0) {
+            if (password_verify($password, $passwordField)) {
+                $isValid = true;
+                $needsRehash = password_needs_rehash($passwordField, PASSWORD_DEFAULT);
+            }
+        } elseif ($passwordField !== '') {
+            if (hash_equals($passwordField, $password)) {
+                $isValid = true;
+                $needsRehash = true; // migrate legacy plain-text passwords
+            }
+        }
+    }
+
+    if ($isValid && $user) {
+        if ($needsRehash) {
+            $newHash = password_hash($password, PASSWORD_DEFAULT);
+            $update = $mysqli->prepare('UPDATE users SET password = ? WHERE id = ?');
+            $update->bind_param('si', $newHash, $user['id']);
+            $update->execute();
+            $update->close();
+        }
+
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         header('Location: /admin/index.php');
