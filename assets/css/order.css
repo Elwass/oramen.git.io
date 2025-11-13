@@ -1,0 +1,35 @@
+body {
+    min-height: 100vh;
+}
+
+.menu-card {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(145deg, #1b263b, #0d1b2a);
+    color: #fff;
+}
+
+.menu-card img {
+    height: 180px;
+    object-fit: cover;
+}
+
+.menu-card .card-body {
+    background: transparent;
+}
+
+#cart-items .list-group-item {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+#cart-items .btn {
+    padding: 0.25rem 0.6rem;
+}
+
+@media (max-width: 991px) {
+    .sticky-lg-top {
+        position: static !important;
+    }
+}
