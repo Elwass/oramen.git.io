@@ -3,6 +3,7 @@
     if (!isDashboard) return;
 
     let lastOrderId = Number(localStorage.getItem('ramen1:lastOrderId') || 0);
+    const basePath = (window.__ramenBasePath || '').replace(/\/$/, '');
 
     const beep = () => {
         try {
@@ -22,7 +23,7 @@
     };
 
     const poll = () => {
-        fetch('/api/latest_order.php', { cache: 'no-store' })
+        fetch(`${basePath}/api/latest_order.php`, { cache: 'no-store' })
             .then((res) => res.json())
             .then((data) => {
                 if (data.latest_id && Number(data.latest_id) > lastOrderId) {

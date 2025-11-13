@@ -11,14 +11,12 @@ if (!is_dir($qrDir)) {
     mkdir($qrDir, 0755, true);
 }
 
-$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
-
 foreach ($tables as $table) {
     $qrFileName = 'table_' . preg_replace('/[^A-Za-z0-9]/', '_', $table['table_number']) . '.png';
     $qrPath = $qrDir . $qrFileName;
-    $orderUrl = $baseUrl . '/order.php?table=' . urlencode($table['table_number']);
+    $orderUrl = absolute_url('order.php?table=' . urlencode($table['table_number']));
     QRcode::png($orderUrl, $qrPath, QR_ECLEVEL_L, 6);
 }
 
-header('Location: /admin/tables/index.php');
+header('Location: ' . url_for('admin/tables/index.php'));
 exit;

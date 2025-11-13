@@ -13,7 +13,7 @@ include __DIR__ . '/../includes/header.php';
         <h1 class="h3">Manajemen Menu</h1>
         <p class="text-muted mb-0">Kelola item menu Ramen 1.</p>
     </div>
-    <a class="btn btn-primary" href="/admin/menu/manage.php">Tambah Item</a>
+    <a class="btn btn-primary" href="<?php echo esc_html(url_for('admin/menu/manage.php')); ?>">Tambah Item</a>
 </div>
 <div class="table-responsive">
     <table class="table table-striped align-middle">
@@ -34,8 +34,9 @@ include __DIR__ . '/../includes/header.php';
             <?php foreach ($items as $item): ?>
                 <tr>
                     <td style="width:120px;">
-                        <?php if ($item['image']): ?>
-                            <img src="<?php echo esc_html($item['image']); ?>" class="img-fluid rounded" alt="<?php echo esc_html($item['name']); ?>">
+                        <?php $imageUrl = public_url($item['image'] ?? ''); ?>
+                        <?php if ($imageUrl): ?>
+                            <img src="<?php echo esc_html($imageUrl); ?>" class="img-fluid rounded" alt="<?php echo esc_html($item['name']); ?>">
                         <?php else: ?>
                             <span class="text-muted">Tidak ada</span>
                         <?php endif; ?>
@@ -45,8 +46,8 @@ include __DIR__ . '/../includes/header.php';
                     <td>Rp <?php echo number_format($item['price'], 0, ',', '.'); ?></td>
                     <td><?php echo esc_html($item['description']); ?></td>
                     <td class="text-nowrap">
-                        <a class="btn btn-sm btn-outline-primary" href="/admin/menu/manage.php?id=<?php echo (int) $item['id']; ?>">Edit</a>
-                        <a class="btn btn-sm btn-outline-danger" href="/admin/menu/delete.php?id=<?php echo (int) $item['id']; ?>" onclick="return confirm('Hapus item ini?');">Hapus</a>
+                        <a class="btn btn-sm btn-outline-primary" href="<?php echo esc_html(url_for('admin/menu/manage.php?id=' . (int) $item['id'])); ?>">Edit</a>
+                        <a class="btn btn-sm btn-outline-danger" href="<?php echo esc_html(url_for('admin/menu/delete.php?id=' . (int) $item['id'])); ?>" onclick="return confirm('Hapus item ini?');">Hapus</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

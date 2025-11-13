@@ -32,7 +32,10 @@ foreach ($items as $item) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu Digital Ramen 1</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/order.css">
+    <link rel="stylesheet" href="<?php echo esc_html(asset_url('css/order.css')); ?>">
+    <script>
+        window.__ramenBasePath = <?php echo json_encode(rtrim(url_for(''), '/')); ?>;
+    </script>
 </head>
 <body class="bg-dark text-light">
     <nav class="navbar navbar-dark bg-black sticky-top">
@@ -57,8 +60,9 @@ foreach ($items as $item) {
                             <?php foreach ($menuItems as $item): ?>
                                 <div class="col-md-6">
                                     <div class="card menu-card h-100">
-                                        <?php if (!empty($item['image'])): ?>
-                                            <img src="<?php echo esc_html($item['image']); ?>" class="card-img-top" alt="<?php echo esc_html($item['name']); ?>">
+                                        <?php $imageUrl = public_url($item['image'] ?? ''); ?>
+                                        <?php if ($imageUrl): ?>
+                                            <img src="<?php echo esc_html($imageUrl); ?>" class="card-img-top" alt="<?php echo esc_html($item['name']); ?>">
                                         <?php endif; ?>
                                         <div class="card-body d-flex flex-column">
                                             <h3 class="h5"><?php echo esc_html($item['name']); ?></h3>
@@ -69,7 +73,7 @@ foreach ($items as $item) {
                                                     'id' => (int) $item['id'],
                                                     'name' => $item['name'],
                                                     'price' => (float) $item['price'],
-                                                    'image' => $item['image'],
+                                                    'image' => $imageUrl,
                                                 ], JSON_HEX_APOS | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_QUOT), ENT_QUOTES, 'UTF-8'); ?>'>Tambah</button>
                                             </div>
                                         </div>
@@ -104,7 +108,7 @@ foreach ($items as $item) {
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/order.js"></script>
+    <script src="<?php echo esc_html(asset_url('js/order.js')); ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.__ramenTableId = <?php echo isset($tableId) && $tableId ? (int) $tableId : 'null'; ?>;

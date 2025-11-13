@@ -4,7 +4,7 @@ require_login();
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($id <= 0) {
-    header('Location: /admin/tables/index.php');
+    header('Location: ' . url_for('admin/tables/index.php'));
     exit;
 }
 
@@ -16,7 +16,7 @@ if ($stmt->execute()) {
 }
 
 if (!$table) {
-    header('Location: /admin/tables/index.php');
+    header('Location: ' . url_for('admin/tables/index.php'));
     exit;
 }
 
@@ -26,14 +26,14 @@ if (!is_dir($qrDir)) {
     mkdir($qrDir, 0755, true);
 }
 
-$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+$baseUrl = rtrim(absolute_url(''), '/');
 $qrFileName = 'table_' . preg_replace('/[^A-Za-z0-9]/', '_', $table['table_number']) . '.png';
 $qrPath = $qrDir . $qrFileName;
-$orderUrl = $baseUrl . '/order.php?table=' . urlencode($table['table_number']);
+$orderUrl = absolute_url('order.php?table=' . urlencode($table['table_number']));
 if (!file_exists($qrPath)) {
     QRcode::png($orderUrl, $qrPath, QR_ECLEVEL_L, 6);
 }
-$qrWebPath = '/uploads/qr/' . $qrFileName;
+$qrWebPath = public_url('uploads/qr/' . $qrFileName);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +61,7 @@ $qrWebPath = '/uploads/qr/' . $qrFileName;
     </div>
     <div class="mt-4 print-btn">
         <button class="btn btn-primary" onclick="window.print()">Cetak QR</button>
-        <a class="btn btn-secondary" href="/admin/tables/index.php">Kembali</a>
+        <a class="btn btn-secondary" href="<?php echo esc_html(url_for('admin/tables/index.php')); ?>">Kembali</a>
     </div>
 </body>
 </html>

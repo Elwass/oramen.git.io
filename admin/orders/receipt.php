@@ -4,7 +4,7 @@ require_login();
 
 $orderId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($orderId <= 0) {
-    header('Location: /admin/index.php');
+    header('Location: ' . url_for('admin/index.php'));
     exit;
 }
 
@@ -19,7 +19,7 @@ if ($stmt->execute()) {
 }
 
 if (!$order) {
-    header('Location: /admin/index.php');
+    header('Location: ' . url_for('admin/index.php'));
     exit;
 }
 
@@ -88,7 +88,7 @@ foreach ($orderItems as $item) {
     <p class="text-center">Status: <strong><?php echo esc_html($order['status']); ?></strong></p>
     <div class="text-center print-hide">
         <button class="btn btn-primary" onclick="window.print()">Cetak</button>
-        <a class="btn btn-secondary" href="/admin/orders/detail.php?id=<?php echo (int) $order['id']; ?>">Kembali</a>
+        <a class="btn btn-secondary" href="<?php echo esc_html(url_for('admin/orders/detail.php?id=' . (int) $order['id'])); ?>">Kembali</a>
     </div>
 </div>
 </body>

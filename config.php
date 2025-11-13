@@ -2,6 +2,58 @@
 // config.php - Database connection and global settings
 session_start();
 
+$documentRoot = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+$projectRoot = rtrim(str_replace('\\', '/', realpath(__DIR__)), '/');
+$basePath = '';
+if ($documentRoot && str_starts_with($projectRoot, $documentRoot)) {
+    $basePath = substr($projectRoot, strlen($documentRoot));
+}
+$basePath = '/' . ltrim($basePath, '/');
+if ($basePath === '/') {
+    $basePath = '';
+}
+define('APP_BASE_PATH', $basePath);
+
+function url_for(string $path = ''): string
+{
+    $path = ltrim($path, '/');
+    $base = APP_BASE_PATH;
+    if ($path === '') {
+        return $base === '' ? '/' : $base;
+    }
+    if ($base === '') {
+        return '/' . $path;
+    }
+    return rtrim($base, '/') . '/' . $path;
+}
+
+function public_url(?string $path): string
+{
+    if (!$path) {
+        return '';
+    }
+    if (preg_match('/^https?:\/\//i', $path)) {
+        return $path;
+    }
+    return url_for(ltrim($path, '/'));
+}
+
+function asset_url(string $path): string
+{
+    return url_for('assets/' . ltrim($path, '/'));
+}
+
+function absolute_url(string $path = ''): string
+{
+    $relative = url_for($path);
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    if ($host === '') {
+        return $relative;
+    }
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    return $scheme . '://' . $host . $relative;
+}
+
 // Update these variables based on your MySQL configuration
 const DB_HOST = 'localhost';
 const DB_USER = 'root';
@@ -145,7 +197,7 @@ function result_fetch_all_assoc(mysqli_result $result): array
 function require_login(): void
 {
     if (!is_logged_in()) {
-        header('Location: /admin/login.php');
+        header('Location: ' . url_for('admin/login.php'));
         exit;
     }
 }

@@ -1,5 +1,5 @@
 <?php
 require_once __DIR__ . '/../config.php';
 session_destroy();
-header('Location: /admin/login.php');
+header('Location: ' . url_for('admin/login.php'));
 exit;

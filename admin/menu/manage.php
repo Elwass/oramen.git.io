@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($name === '' || $price <= 0 || $categoryId <= 0) {
         $_SESSION['menu_error'] = 'Nama, harga, dan kategori wajib diisi.';
-        $redirect = '/admin/menu/manage.php' . ($itemId ? '?id=' . $itemId : '');
-        header('Location: ' . $redirect);
+        $redirectPath = 'admin/menu/manage.php' . ($itemId ? '?id=' . $itemId : '');
+        header('Location: ' . url_for($redirectPath));
         exit;
     }
 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!empty($_FILES['image']['name'])) {
-        $uploadDir = '/uploads/';
+        $uploadDir = 'uploads/';
         if (!is_dir(__DIR__ . '/../../uploads')) {
             mkdir(__DIR__ . '/../../uploads', 0755, true);
         }
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     unset($_SESSION['menu_error']);
-    header('Location: /admin/menu/index.php');
+    header('Location: ' . url_for('admin/menu/index.php'));
     exit;
 }
 
@@ -105,13 +105,14 @@ include __DIR__ . '/../includes/header.php';
                     <div class="mb-3">
                         <label for="image" class="form-label">Gambar</label>
                         <input type="file" name="image" id="image" class="form-control" accept="image/*">
-                        <?php if (!empty($item['image'])): ?>
+                        <?php $currentImage = public_url($item['image'] ?? ''); ?>
+                        <?php if ($currentImage): ?>
                             <p class="mt-2">Gambar saat ini:</p>
-                            <img src="<?php echo esc_html($item['image']); ?>" alt="<?php echo esc_html($item['name']); ?>" class="img-thumbnail" style="max-width: 200px;">
+                            <img src="<?php echo esc_html($currentImage); ?>" alt="<?php echo esc_html($item['name']); ?>" class="img-thumbnail" style="max-width: 200px;">
                         <?php endif; ?>
                     </div>
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="/admin/menu/index.php" class="btn btn-secondary">Batal</a>
+                        <a href="<?php echo esc_html(url_for('admin/menu/index.php')); ?>" class="btn btn-secondary">Batal</a>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>

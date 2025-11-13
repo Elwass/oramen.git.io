@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../config.php';
 
 if (is_logged_in()) {
-    header('Location: /admin/index.php');
+    header('Location: ' . url_for('admin/index.php'));
     exit;
 }
 
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
-        header('Location: /admin/index.php');
+        header('Location: ' . url_for('admin/index.php'));
         exit;
     }
 

@@ -4,7 +4,7 @@ require_login();
 
 $orderId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($orderId <= 0) {
-    header('Location: /admin/index.php');
+    header('Location: ' . url_for('admin/index.php'));
     exit;
 }
 
@@ -21,7 +21,7 @@ if ($stmt->execute()) {
 }
 
 if (!$order) {
-    header('Location: /admin/index.php');
+    header('Location: ' . url_for('admin/index.php'));
     exit;
 }
 
@@ -81,30 +81,30 @@ include __DIR__ . '/../includes/header.php';
                 <p class="d-flex justify-content-between"><span>Total</span> <strong>Rp <?php echo number_format($order['total'], 0, ',', '.'); ?></strong></p>
                 <div class="d-grid gap-2">
                     <?php if ($order['status'] === 'Baru'): ?>
-                        <form method="post" action="/admin/orders/update_status.php" class="d-grid gap-2">
+                        <form method="post" action="<?php echo esc_html(url_for('admin/orders/update_status.php')); ?>" class="d-grid gap-2">
                             <input type="hidden" name="order_id" value="<?php echo (int) $order['id']; ?>">
                             <input type="hidden" name="status" value="Sedang Dibuat">
                             <button type="submit" class="btn btn-warning">Tandai Sedang Dibuat</button>
                         </form>
                     <?php endif; ?>
                     <?php if (in_array($order['status'], ['Baru','Sedang Dibuat'], true)): ?>
-                        <form method="post" action="/admin/orders/update_status.php" class="d-grid gap-2">
+                        <form method="post" action="<?php echo esc_html(url_for('admin/orders/update_status.php')); ?>" class="d-grid gap-2">
                             <input type="hidden" name="order_id" value="<?php echo (int) $order['id']; ?>">
                             <input type="hidden" name="status" value="Selesai">
                             <button type="submit" class="btn btn-success">Tandai Selesai</button>
                         </form>
                     <?php endif; ?>
                     <?php if (in_array($order['status'], ['Selesai'], true)): ?>
-                        <form method="post" action="/admin/orders/update_status.php" class="d-grid gap-2">
+                        <form method="post" action="<?php echo esc_html(url_for('admin/orders/update_status.php')); ?>" class="d-grid gap-2">
                             <input type="hidden" name="order_id" value="<?php echo (int) $order['id']; ?>">
                             <input type="hidden" name="status" value="Dibayar">
                             <button type="submit" class="btn btn-primary">Proses Pembayaran</button>
                         </form>
                     <?php endif; ?>
                     <?php if ($order['status'] === 'Dibayar'): ?>
-                        <a class="btn btn-outline-secondary" href="/admin/orders/receipt.php?id=<?php echo (int) $order['id']; ?>" target="_blank">Cetak Struk</a>
+                        <a class="btn btn-outline-secondary" href="<?php echo esc_html(url_for('admin/orders/receipt.php?id=' . (int) $order['id'])); ?>" target="_blank">Cetak Struk</a>
                     <?php endif; ?>
-                    <a class="btn btn-light" href="/admin/index.php">← Kembali</a>
+                    <a class="btn btn-light" href="<?php echo esc_html(url_for('admin/index.php')); ?>">← Kembali</a>
                 </div>
             </div>
         </div>

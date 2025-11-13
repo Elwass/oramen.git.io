@@ -72,7 +72,7 @@ include __DIR__ . '/includes/header.php';
                     <td><?php echo esc_html(date('d/m/Y H:i', strtotime($order['created_at']))); ?></td>
                     <td>Rp <?php echo number_format($order['total'], 0, ',', '.'); ?></td>
                     <td>
-                        <a class="btn btn-sm btn-primary" href="/admin/orders/detail.php?id=<?php echo (int) $order['id']; ?>">Detail</a>
+                        <a class="btn btn-sm btn-primary" href="<?php echo esc_html(url_for('admin/orders/detail.php?id=' . (int) $order['id'])); ?>">Detail</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

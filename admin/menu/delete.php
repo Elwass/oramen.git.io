@@ -9,5 +9,5 @@ if ($itemId > 0) {
     $stmt->execute();
 }
 
-header('Location: /admin/menu/index.php');
+header('Location: ' . url_for('admin/menu/index.php'));
 exit;

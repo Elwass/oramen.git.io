@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['table_number'])) {
         $stmt->bind_param('s', $tableNumber);
         $stmt->execute();
     }
-    header('Location: /admin/tables/index.php');
+    header('Location: ' . url_for('admin/tables/index.php'));
     exit;
 }
 
@@ -21,7 +21,7 @@ if (isset($_GET['delete'])) {
         $stmt->bind_param('i', $id);
         $stmt->execute();
     }
-    header('Location: /admin/tables/index.php');
+    header('Location: ' . url_for('admin/tables/index.php'));
     exit;
 }
 
@@ -32,8 +32,6 @@ $qrDir = __DIR__ . '/../../uploads/qr/';
 if (!is_dir($qrDir)) {
     mkdir($qrDir, 0755, true);
 }
-
-$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -77,11 +75,11 @@ include __DIR__ . '/../includes/header.php';
                             <?php
                                 $qrFileName = 'table_' . preg_replace('/[^A-Za-z0-9]/', '_', $table['table_number']) . '.png';
                                 $qrPath = $qrDir . $qrFileName;
-                                $orderUrl = $baseUrl . '/order.php?table=' . urlencode($table['table_number']);
+                                $orderUrl = absolute_url('order.php?table=' . urlencode($table['table_number']));
                                 if (!file_exists($qrPath)) {
                                     QRcode::png($orderUrl, $qrPath, QR_ECLEVEL_L, 6);
                                 }
-                                $qrWebPath = '/uploads/qr/' . $qrFileName;
+                                $qrWebPath = public_url('uploads/qr/' . $qrFileName);
                             ?>
                             <tr>
                                 <td>Meja <?php echo esc_html($table['table_number']); ?></td>

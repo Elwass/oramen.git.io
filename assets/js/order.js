@@ -1,4 +1,5 @@
 const cart = new Map();
+const basePath = (window.__ramenBasePath || '').replace(/\/$/, '');
 
 const renderCart = () => {
     const list = document.getElementById('cart-items');
@@ -96,7 +97,7 @@ submitBtn.addEventListener('click', () => {
         price: item.price,
     }));
 
-    fetch('/submit_order.php', {
+    fetch(`${basePath}/submit_order.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
